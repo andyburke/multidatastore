@@ -29,6 +29,17 @@ const Multi_Data_Store = {
         }
     },
 
+    stop: async function() {
+        const drivers = this.drivers._drivers || [];
+        for ( let driver of drivers ) {
+            if ( !driver.stop ) {
+                continue;
+            }
+
+            await driver.stop();
+        }
+    },
+
     put: async function( object ) {
         const drivers = this.drivers._drivers || [];
         for ( let driver of drivers ) {
