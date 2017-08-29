@@ -15,10 +15,10 @@ tape( 'API: API is correct on instance', t => {
 
     t.ok( mds, 'got instance' );
 
-    t.equal( mds && typeof mds.drivers, 'object', 'exports drivers object' );
     t.equal( mds && typeof mds.init, 'function', 'exports init' );
-    t.equal( mds && mds.drivers && typeof mds.drivers.add, 'function', 'exports drivers.add' );
-    t.equal( mds && mds.drivers && typeof mds.drivers.remove, 'function', 'exports drivers.remove' );
+    t.equal( mds && typeof mds.stop, 'function', 'exports stop' );
+    t.equal( mds && typeof mds.add_driver, 'function', 'exports add_driver' );
+    t.equal( mds && typeof mds.remove_driver, 'function', 'exports remove_driver' );
     t.equal( mds && typeof mds.put, 'function', 'exports put' );
     t.equal( mds && typeof mds.get, 'function', 'exports get' );
     t.equal( mds && typeof mds.del, 'function', 'exports del' );
