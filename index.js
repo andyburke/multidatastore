@@ -84,8 +84,13 @@ const Multi_Data_Store = {
 };
 
 module.exports = {
-    create: function() {
+    create: async function( drivers ) {
         const instance = Object.assign( {}, Multi_Data_Store );
+
+        if ( drivers && drivers.length ) {
+            await instance.init( drivers );
+        }
+
         return instance;
     }
 };
