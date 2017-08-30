@@ -58,6 +58,19 @@ const Multi_Data_Store = {
         return await readable_driver.get( id );
     },
 
+    find: async function( criteria ) {
+        const drivers = this._drivers || [];
+        const searchable_driver = drivers.find( driver => {
+            return driver && driver.options && typeof driver.options.find === 'function';
+        } );
+
+        if ( !searchable_driver ) {
+            throw new Error( 'missing searchable driver' );
+        }
+
+        return await searchable_driver.options.find( criteria, searchable_driver );
+    },
+
     del: async function( id  ) {
         const drivers = this._drivers || [];
         for ( let driver of drivers ) {
