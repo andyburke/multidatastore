@@ -1,11 +1,12 @@
 {
   "name": "multidatastore",
-  "version": "2.3.0",
+  "version": "2.3.1",
   "description": "multiple data store",
   "contributors": [
     "Andy Burke <andy.burke@mailbox.earth> (https://github.com/andyburke)"
   ],
   "main": "index.js",
+  "files": [],
   "scripts": {
     "test": "tape test/**/*.js | tap-spec"
   },
