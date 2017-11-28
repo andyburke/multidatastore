@@ -41,7 +41,18 @@ const Multi_Data_Store = {
     put: async function( object, options ) {
         const drivers = this._drivers || [];
         for ( let driver of drivers ) {
-            await driver.put( object, options );
+
+            const processors = driver.options.processors || [];
+
+            const serialized = await processors.map( processor => processor.serialize.bind( processor ) ).reduce( async ( _object, serialize ) => {
+                if ( !serialize ) {
+                    return _object;
+                }
+
+                return await serialize( _object, this.options );
+            }, object );
+
+            await driver.put( serialized, options );
         }
     },
 
@@ -55,7 +66,19 @@ const Multi_Data_Store = {
             throw new Error( 'missing readable driver' );
         }
 
-        return await readable_driver.get( id, options );
+        const serialized = await readable_driver.get( id, options );
+
+        const processors = readable_driver.options.processors || [];
+
+        const object = await processors.map( processor => processor.deserialize.bind( processor ) ).reduceRight( async ( _object, deserialize ) => {
+            if ( !deserialize ) {
+                return _object;
+            }
+
+            return await deserialize( _object, this.options );
+        }, serialized );
+
+        return object;
     },
 
     find: async function( criteria, options ) {
