@@ -43,14 +43,18 @@ const Multi_Data_Store = {
         for ( let driver of drivers ) {
 
             const processors = driver.options.processors || [];
+            const serializers = processors.map( processor => {
+                return processor.serialize ? processor.serialize.bind( processor ) : null;
+            } );
 
-            const serialized = await processors.map( processor => processor.serialize.bind( processor ) ).reduce( async ( _object, serialize ) => {
-                if ( !serialize ) {
-                    return _object;
+            let serialized = object;
+            for ( let serializer of serializers ) {
+                if ( !serializer ) {
+                    continue;
                 }
 
-                return await serialize( _object, this.options );
-            }, object );
+                serialized = await serializer( serialized, this.options );
+            }
 
             await driver.put( serialized, options );
         }
@@ -69,14 +73,18 @@ const Multi_Data_Store = {
         const serialized = await readable_driver.get( id, options );
 
         const processors = readable_driver.options.processors || [];
+        const deserializers = processors.reverse().map( processor => {
+            return processor.deserialize ? processor.deserialize.bind( processor ) : null;
+        } );
 
-        const object = await processors.map( processor => processor.deserialize.bind( processor ) ).reduceRight( async ( _object, deserialize ) => {
-            if ( !deserialize ) {
-                return _object;
+        let object = serialized;
+        for ( let deserializer of deserializers ) {
+            if ( !deserializer ) {
+                continue;
             }
 
-            return await deserialize( _object, this.options );
-        }, serialized );
+            object = await deserializer( object, this.options );
+        }
 
         return object;
     },
