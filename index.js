@@ -83,7 +83,7 @@ const Multi_Data_Store = {
                 continue;
             }
 
-            object = await deserializer( object, this.options );
+            object = object ? await deserializer( object, this.options ) : object;
         }
 
         return object;
@@ -99,7 +99,23 @@ const Multi_Data_Store = {
             throw new Error( 'missing searchable driver' );
         }
 
-        return await searchable_driver.options.find( criteria, options, searchable_driver );
+        const serialized = await searchable_driver.options.find( criteria, options, searchable_driver );
+
+        const processors = searchable_driver.options.processors || [];
+        const deserializers = processors.reverse().map( processor => {
+            return processor.deserialize ? processor.deserialize.bind( processor ) : null;
+        } );
+
+        let object = serialized;
+        for ( let deserializer of deserializers ) {
+            if ( !deserializer ) {
+                continue;
+            }
+
+            object = object ? await deserializer( object, this.options ) : object;
+        }
+
+        return object;
     },
 
     del: async function( id, options ) {
