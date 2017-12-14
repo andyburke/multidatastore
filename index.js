@@ -139,5 +139,39 @@ module.exports = {
         }
 
         return instance;
+    },
+
+    singleton: async function( owner, drivers, _timeout ) {
+        if ( owner._mds ) {
+            return owner._mds;
+        }
+
+        const timeout = typeof _timeout === 'number' ? _timeout : 10000; // default to 10s timeout
+
+        if ( owner._getting_mds ) {
+            return new Promise( ( resolve, reject ) => {
+                const started_waiting = Date.now();
+                ( function _wait_for_mds() {
+                    if ( !owner._getting_mds ) {
+                        return resolve( owner._mds );
+                    }
+
+                    if ( timeout ) {
+                        const waited = Date.now() - started_waiting;
+                        if ( waited > timeout ) {
+                            return reject( 'Timed out waiting for database.' );
+                        }
+                    }
+
+                    setTimeout( _wait_for_mds, 100 );
+                } )();
+            } );
+        }
+
+        owner._getting_mds = true;
+        owner._mds = await this.create( drivers );
+        owner._getting_mds = false;
+
+        return owner._mds;
     }
 };

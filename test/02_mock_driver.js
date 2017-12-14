@@ -38,7 +38,7 @@ const Memory_Driver = {
 };
 
 tape( 'Mock Driver', async t => {
-    const mds = Multi_Data_Store.create();
+    const mds = await Multi_Data_Store.create();
     await mds.init( [ Memory_Driver.create() ] );
 
     const test_object = {

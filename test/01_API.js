@@ -6,12 +6,13 @@ const tape = require( 'tape-async' );
 tape( 'API: imports properly', t => {
     t.ok( Multi_Data_Store, 'module exports' );
     t.equal( Multi_Data_Store && typeof Multi_Data_Store.create, 'function', 'exports create()' );
+    t.equal( Multi_Data_Store && typeof Multi_Data_Store.singleton, 'function', 'exports singleton()' );
     t.end();
 } );
 
-tape( 'API: API is correct on instance', t => {
+tape( 'API: API is correct on instance', async t => {
 
-    const mds = Multi_Data_Store.create();
+    const mds = await Multi_Data_Store.create();
 
     t.ok( mds, 'got instance' );
 
