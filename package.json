@@ -1,6 +1,6 @@
 {
   "name": "multidatastore",
-  "version": "2.5.0",
+  "version": "2.6.0",
   "description": "multiple data store",
   "contributors": [
     "Andy Burke <andy.burke@mailbox.earth> (https://github.com/andyburke)"
@@ -13,8 +13,10 @@
   "license": "MIT",
   "devDependencies": {
     "eslint": "^4.5.0",
-    "extend": "^3.0.1",
     "tap-spec": "^4.1.1",
     "tape-async": "^2.3.0"
+  },
+  "dependencies": {
+    "extend": "^3.0.1"
   }
 }

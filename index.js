@@ -1,5 +1,7 @@
 'use strict';
 
+const extend = require( 'extend' );
+
 const Multi_Data_Store = {
     init: async function( _drivers ) {
         const drivers = _drivers || [];
@@ -141,12 +143,17 @@ module.exports = {
         return instance;
     },
 
-    singleton: async function( owner, drivers, _timeout ) {
+    singleton: async function( owner, _options ) {
         if ( owner._mds ) {
             return owner._mds;
         }
 
-        const timeout = typeof _timeout === 'number' ? _timeout : 10000; // default to 10s timeout
+        const options = extend( true, {
+            timeout: 10000,
+            precreate: null,
+            postcreate: null,
+            drivers: []
+        }, _options );
 
         if ( owner._getting_mds ) {
             return new Promise( ( resolve, reject ) => {
@@ -156,9 +163,9 @@ module.exports = {
                         return resolve( owner._mds );
                     }
 
-                    if ( timeout ) {
+                    if ( options.timeout ) {
                         const waited = Date.now() - started_waiting;
-                        if ( waited > timeout ) {
+                        if ( waited > options.timeout ) {
                             return reject( 'Timed out waiting for database.' );
                         }
                     }
@@ -169,7 +176,19 @@ module.exports = {
         }
 
         owner._getting_mds = true;
-        owner._mds = await this.create( drivers );
+
+        if ( options.precreate ) {
+            await options.precreate();
+        }
+
+        const mds = await this.create( options.drivers );
+
+        if ( options.postcreate ) {
+            await options.postcreate();
+        }
+
+        owner._mds = mds;
+
         owner._getting_mds = false;
 
         return owner._mds;
