@@ -181,7 +181,9 @@ module.exports = {
             await options.precreate();
         }
 
-        const mds = await this.create( options.drivers );
+        const create = options.create || this.create.bind( this );
+
+        const mds = await create( options.drivers );
 
         if ( options.postcreate ) {
             await options.postcreate();
