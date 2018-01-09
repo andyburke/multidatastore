@@ -108,16 +108,20 @@ const Multi_Data_Store = {
             return processor.deserialize ? processor.deserialize.bind( processor ) : null;
         } );
 
-        let object = serialized;
-        for ( let deserializer of deserializers ) {
-            if ( !deserializer ) {
-                continue;
-            }
+        const deserialized = Array.isArray( serialized ) ? serialized.slice( 0 ) : [ serialized ];
 
-            object = object ? await deserializer( object, this.options ) : object;
+        for ( let index = 0, num = deserialized.length; index < num; ++index ) {
+            for ( let deserializer of deserializers ) {
+                if ( !deserializer ) {
+                    continue;
+                }
+
+                deserialized[ index ] = deserialized[ index ] ? await deserializer( deserialized[ index ], this.options ) : deserialized[ index ];
+            }
         }
 
-        return object;
+        const found = Array.isArray( serialized ) ? deserialized : deserialized[ 0 ];
+        return found;
     },
 
     del: async function( id, options ) {
