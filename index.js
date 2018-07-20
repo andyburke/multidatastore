@@ -62,19 +62,18 @@ const Multi_Data_Store = {
         }
     },
 
-    get: async function( id, options ) {
-        const drivers = this._drivers || [];
-        const readable_driver = drivers.find( driver => {
+    get: async function( id, options, _driver ) {
+        const driver = _driver || ( this._drivers || [] ).find( driver => {
             return driver && driver.options && driver.options.readable;
         } );
 
-        if ( !readable_driver ) {
+        if ( !driver ) {
             throw new Error( 'missing readable driver' );
         }
 
-        const serialized = await readable_driver.get( id, options );
+        const serialized = await driver.get( id, options );
 
-        const processors = readable_driver.options.processors || [];
+        const processors = driver.options.processors || [];
         const deserializers = processors.reverse().map( processor => {
             return processor.deserialize ? processor.deserialize.bind( processor ) : null;
         } );
@@ -91,19 +90,18 @@ const Multi_Data_Store = {
         return object;
     },
 
-    find: async function( criteria, options ) {
-        const drivers = this._drivers || [];
-        const searchable_driver = drivers.find( driver => {
+    find: async function( criteria, options, _driver ) {
+        const driver = _driver || ( this._drivers || [] ).find( driver => {
             return driver && driver.options && typeof driver.options.find === 'function';
         } );
 
-        if ( !searchable_driver ) {
+        if ( !driver ) {
             throw new Error( 'missing searchable driver' );
         }
 
-        const serialized = await searchable_driver.options.find( criteria, options, searchable_driver );
+        const serialized = await driver.options.find( criteria, options, driver );
 
-        const processors = searchable_driver.options.processors || [];
+        const processors = driver.options.processors || [];
         const deserializers = processors.reverse().map( processor => {
             return processor.deserialize ? processor.deserialize.bind( processor ) : null;
         } );
