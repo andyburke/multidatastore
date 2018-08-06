@@ -74,7 +74,7 @@ const Multi_Data_Store = {
         const serialized = await driver.get( id, options );
 
         const processors = driver.options.processors || [];
-        const deserializers = processors.reverse().map( processor => {
+        const deserializers = processors.slice().reverse().map( processor => {
             return processor.deserialize ? processor.deserialize.bind( processor ) : null;
         } );
 
@@ -102,7 +102,7 @@ const Multi_Data_Store = {
         const serialized = await driver.options.find( criteria, options, driver );
 
         const processors = driver.options.processors || [];
-        const deserializers = processors.reverse().map( processor => {
+        const deserializers = processors.slice().reverse().map( processor => {
             return processor.deserialize ? processor.deserialize.bind( processor ) : null;
         } );
 
