@@ -88,7 +88,7 @@ const Multi_Data_Store = {
                 continue;
             }
 
-            object = object ? await deserializer( object, this.options ) : object;
+            object = object ? await deserializer( object ) : object;
         }
 
         return object;
@@ -118,7 +118,7 @@ const Multi_Data_Store = {
                     continue;
                 }
 
-                deserialized[ index ] = deserialized[ index ] ? await deserializer( deserialized[ index ], this.options ) : deserialized[ index ];
+                deserialized[ index ] = deserialized[ index ] ? await deserializer( deserialized[ index ] ) : deserialized[ index ];
             }
         }
 
