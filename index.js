@@ -44,21 +44,25 @@ const Multi_Data_Store = {
         const drivers = this._drivers || [];
         for ( let driver of drivers ) {
 
-            const processors = driver.options.processors || [];
-            const serializers = processors.map( processor => {
-                return processor.serialize ? processor.serialize.bind( processor ) : null;
-            } );
+            async function write() {
+                const processors = driver.options.processors || [];
+                const serializers = processors.map( processor => {
+                    return processor.serialize ? processor.serialize.bind( processor ) : null;
+                } );
 
-            let serialized = object;
-            for ( let serializer of serializers ) {
-                if ( !serializer ) {
-                    continue;
+                let serialized = object;
+                for ( let serializer of serializers ) {
+                    if ( !serializer ) {
+                        continue;
+                    }
+
+                    serialized = await serializer( serialized, this.options );
                 }
 
-                serialized = await serializer( serialized, this.options );
+                return await driver.put( serialized, options );
             }
 
-            await driver.put( serialized, options );
+            driver.options.await === false ? write() : await write();
         }
     },
 
