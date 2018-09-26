@@ -1,6 +1,6 @@
 {
   "name": "multidatastore",
-  "version": "2.10.0",
+  "version": "3.0.0",
   "description": "multiple data store",
   "contributors": [
     "Andy Burke <andy.burke@mailbox.earth> (https://github.com/andyburke)"

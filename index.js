@@ -56,7 +56,7 @@ const Multi_Data_Store = {
                         continue;
                     }
 
-                    serialized = await serializer( serialized, this.options );
+                    serialized = await serializer( serialized );
                 }
 
                 return await driver.put( serialized, options );
