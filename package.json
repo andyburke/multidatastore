@@ -1,6 +1,6 @@
 {
   "name": "multidatastore",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "description": "multiple data store",
   "contributors": [
     "Andy Burke <andy.burke@mailbox.earth> (https://github.com/andyburke)"
@@ -8,11 +8,14 @@
   "main": "index.js",
   "files": [],
   "scripts": {
-    "test": "tape test/**/*.js | tap-spec"
+    "test": "tape test/**/*.js | tap-spec",
+    "docs": "jsdoc2md index.js > README.md"
   },
   "license": "MIT",
   "devDependencies": {
     "eslint": "^5.6.0",
+    "jsdoc-to-markdown": "^4.0.1",
+    "npm": "^6.4.1",
     "tap-spec": "^5.0.0",
     "tape-async": "^2.3.0"
   },
