@@ -15,7 +15,7 @@ async function _deserialize( serialized, driver ) {
     const deserialized = Array.isArray( serialized ) ? serialized.slice( 0 ) : [ serialized ];
 
     for ( let index = 0, num = deserialized.length; index < num; ++index ) {
-        for ( let deserializer of deserializers ) {
+        for ( const deserializer of deserializers ) {
             if ( !deserializer ) {
                 continue;
             }
@@ -41,7 +41,7 @@ const Multi_Data_Store = {
      */
     init: async function( _drivers ) {
         const drivers = _drivers || [];
-        for ( let driver of drivers ) {
+        for ( const driver of drivers ) {
             this.add_driver( driver );
             await driver.init();
         }
@@ -82,7 +82,7 @@ const Multi_Data_Store = {
      */
     stop: async function() {
         const drivers = this._drivers || [];
-        for ( let driver of drivers ) {
+        for ( const driver of drivers ) {
             if ( !driver.stop ) {
                 continue;
             }
@@ -100,7 +100,7 @@ const Multi_Data_Store = {
      */
     put: async function( object, options ) {
         const drivers = this._drivers || [];
-        for ( let driver of drivers ) {
+        for ( const driver of drivers ) {
 
             async function write() {
                 const processors = driver.options.processors || [];
@@ -109,7 +109,7 @@ const Multi_Data_Store = {
                 } );
 
                 let serialized = object;
-                for ( let serializer of serializers ) {
+                for ( const serializer of serializers ) {
                     if ( !serializer ) {
                         continue;
                     }
@@ -149,7 +149,7 @@ const Multi_Data_Store = {
         } );
 
         let object = serialized;
-        for ( let deserializer of deserializers ) {
+        for ( const deserializer of deserializers ) {
             if ( !deserializer ) {
                 continue;
             }
@@ -219,13 +219,38 @@ const Multi_Data_Store = {
      */
     del: async function( id, options ) {
         const drivers = this._drivers || [];
-        for ( let driver of drivers ) {
+        for ( const driver of drivers ) {
             if ( driver.options && driver.options.ignore_delete ) {
                 continue;
             }
 
             await driver.del( id, options );
         }
+    },
+
+    /**
+     * Deletes from the MDS based on specified critera. Iterates through the available
+     * drivers looking for one that supports the .del_by() method. This is useful for datastores
+     * that support special query indexing on a per-field basis.
+     * @summary Delete obect(s) from the MDS based on given criteria.
+     * @async
+     * @function
+     * @param {object} criteria - An object containing search criteria.
+     * @param {object} [options] - search options
+     * @param {driver} [driver] - optionally search a specific datastore driver
+     */
+    del_by: async function( criteria, options, _driver ) {
+        const driver = _driver || ( this._drivers || [] ).find( driver => {
+            return driver && driver.options && typeof driver.options.del_by === 'function';
+        } );
+
+        if ( !driver ) {
+            throw new Error( 'missing searchable deletion driver' );
+        }
+
+        const serialized = await driver.options.del_by( criteria, options, driver );
+        const deleted = await _deserialize( serialized, driver );
+        return deleted;
     }
 };
 

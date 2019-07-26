@@ -19,6 +19,7 @@ A wrapper around multiple data stores.
             * [.find(criteria, [options], [driver])](#module_multidatastore..Multi_Data_Store.find)
             * [.find_by(criteria, [options], [driver])](#module_multidatastore..Multi_Data_Store.find_by)
             * [.del(id, [options])](#module_multidatastore..Multi_Data_Store.del)
+            * [.del_by(criteria, [options], [driver])](#module_multidatastore..Multi_Data_Store.del_by)
 
 <a name="module_multidatastore.create"></a>
 
@@ -63,6 +64,7 @@ multidatastore Interface
     * [.find(criteria, [options], [driver])](#module_multidatastore..Multi_Data_Store.find)
     * [.find_by(criteria, [options], [driver])](#module_multidatastore..Multi_Data_Store.find_by)
     * [.del(id, [options])](#module_multidatastore..Multi_Data_Store.del)
+    * [.del_by(criteria, [options], [driver])](#module_multidatastore..Multi_Data_Store.del_by)
 
 <a name="module_multidatastore..Multi_Data_Store.init"></a>
 
@@ -171,4 +173,20 @@ Deletes an object from the MDS.
 | --- | --- | --- |
 | id | <code>string</code> | The object id. |
 | [options] | <code>object</code> | deletion options |
+
+<a name="module_multidatastore..Multi_Data_Store.del_by"></a>
+
+#### Multi_Data_Store.del\_by(criteria, [options], [driver])
+Deletes from the MDS based on specified critera. Iterates through the available
+drivers looking for one that supports the .del_by() method. This is useful for datastores
+that support special query indexing on a per-field basis.
+
+**Kind**: static method of [<code>Multi\_Data\_Store</code>](#module_multidatastore..Multi_Data_Store)  
+**Summary**: Delete obect(s) from the MDS based on given criteria.  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| criteria | <code>object</code> | An object containing search criteria. |
+| [options] | <code>object</code> | search options |
+| [driver] | <code>driver</code> | optionally search a specific datastore driver |
 
